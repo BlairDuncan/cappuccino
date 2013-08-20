@@ -588,9 +588,19 @@ var CPMainCibFile               = @"CPMainCibFile",
 
     // Check if this is a candidate for key equivalent...
     if ([anEvent _couldBeKeyEquivalent] && [self _handleKeyEquivalent:anEvent])
-        // The key equivalent was handled.
+    {
+        switch([anEvent keyCode])
+        {
+            case 13: // enter/return
+            case 67: // command c -> copy
+            case 86: // command v -> paste
+            case 88: // command x -> cut
+                break;
+            default:
+                [[theWindow platformWindow] _propagateCurrentDOMEvent:NO];
+        }
         return;
-
+    }
     if ([anEvent type] == CPMouseMoved)
     {
         if (theWindow !== _lastMouseMoveWindow)
