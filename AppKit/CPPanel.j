@@ -119,4 +119,10 @@ CPDocModalWindowMask    = 1 << 6;
     return YES;
 }
 
+- (void)complete:(id)sender
+{
+    [self close];
+}
+
+
 @end
