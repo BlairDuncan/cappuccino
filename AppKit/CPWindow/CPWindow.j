@@ -2772,7 +2772,6 @@ CPTexturedBackgroundWindowMask
     var sheet = _sheetContext["sheet"];
     sheet._isSheet = YES;
     sheet._parentView = self;
-
     [[CPNotificationCenter defaultCenter] postNotificationName:CPWindowWillBeginSheetNotification object:self];
 
     // If sheet is attached to a modal window, the sheet runs
@@ -2792,7 +2791,8 @@ CPTexturedBackgroundWindowMask
         frame = [self frame],
         originX = frame.origin.x + FLOOR((frame.size.width - sheetFrame.size.width) / 2),
         startFrame = CGRectMake(originX, -sheetShadowFrame.size.height, sheetFrame.size.width, sheetFrame.size.height),
-        endY = -1 + [_windowView bodyOffset] - [[self contentView] frame].origin.y,
+        adjustment = [self isFullPlatformWindow] ? -1 : 1,
+        endY = adjustment + [_windowView bodyOffset] - [[self contentView] frame].origin.y,
         endFrame = CGRectMake(originX, endY, sheetFrame.size.width, sheetFrame.size.height);
 
     if (_toolbar && [_windowView showsToolbar] && [self isFullPlatformWindow])
