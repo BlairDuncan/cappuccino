@@ -3298,7 +3298,7 @@ var keyViewComparator = function(lhs, rhs, context)
     if ([self isFullPlatformWindow])
         return [self setFrame:[_platformWindow visibleFrame]];
 
-    if (!CPWindowConstrainToScreen || _autoresizingMask === CPWindowNotSizable)
+    if (_constrainsToUsableScreen && (!CPWindowConstrainToScreen || _autoresizingMask === CPWindowNotSizable))
         return;
 
     var frame = [_platformWindow contentBounds],
@@ -3320,7 +3320,7 @@ var keyViewComparator = function(lhs, rhs, context)
     if (_autoresizingMask & CPWindowHeightSizable)
         newFrame.size.height += dY;
 
-    [self _setFrame:newFrame display:YES animate:NO constrainWidth:YES constrainHeight:YES];
+    [self _setFrame:newFrame display:YES animate:NO constrainWidth:_constrainsToUsableScreen constrainHeight:_constrainsToUsableScreen];
 }
 
 /*
