@@ -38,7 +38,10 @@ CPTextFieldRoundedBezel         = 1;    /*! A textfield bezel with rounded corne
 CPTextFieldDidFocusNotification = @"CPTextFieldDidFocusNotification";
 CPTextFieldDidBlurNotification  = @"CPTextFieldDidBlurNotification";
 
-var CPTextFieldDOMInputElement = nil,
+CPTextFieldDidChangeSelectionNotification = "CPTextFieldDidChangeSelectionNotification";
+
+var CPTextFieldSelectFunction,
+    CPTextFieldDOMInputElement = nil,
     CPTextFieldDOMPasswordInputElement = nil,
     CPTextFieldDOMStandardInputElement = nil,
     CPTextFieldInputOwner = nil,
@@ -231,6 +234,13 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
         CPTextFieldDOMInputElement.style.whiteSpace = "pre";
         CPTextFieldDOMInputElement.style.background = "transparent";
         CPTextFieldDOMInputElement.style.outline = "none";
+
+        CPTextFieldSelectFunction = function()
+        {
+            [self textDidChangeSelection:[CPNotification notificationWithName:CPTextFieldDidChangeSelectionNotification object:CPTextFieldInputOwner userInfo:nil]];
+        };
+
+        CPTextFieldDOMInputElement.onselect = CPTextFieldSelectFunction;
 
         CPTextFieldBlurHandler = function(anEvent)
         {
@@ -865,9 +875,13 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
     {
         _willBecomeFirstResponderByClick = YES;
         [[self window] makeFirstResponder:self];
+        if ([anEvent clickCount] === 1)
+            window.setTimeout(CPTextFieldSelectFunction, 0);
     }
     else if ([self isSelectable])
     {
+        if ([anEvent clickCount] === 1)
+            window.setTimeout(CPTextFieldSelectFunction, 0);
         if (document.attachEvent)
         {
             CPTextFieldCachedSelectStartFunction = [[self window] platformWindow]._DOMBodyElement.onselectstart;
@@ -947,6 +961,7 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
     [self interpretKeyEvents:[anEvent]];
 
     [[CPRunLoop currentRunLoop] limitDateForMode:CPDefaultRunLoopMode];
+    window.setTimeout(CPTextFieldSelectFunction, 0);
 }
 
 /*!
@@ -1061,6 +1076,12 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
 
     [super textDidChange:note];
 }
+
+- (void)textDidChangeSelection:(CPNotification)note
+{
+    [[[[note object] window] toolbar] validateVisibleItems];
+}
+
 
 /*!
     Returns the string in the text field.
@@ -1272,7 +1293,7 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
 */
 - (void)selectText:(id)sender
 {
-    [self _selectText:sender immediately:NO];
+    [self _selectText:sender immediately:YES];
 }
 
 - (void)_selectText:(id)sender immediately:(BOOL)immediately
@@ -1308,7 +1329,7 @@ CPTextFieldStatePlaceholder = CPThemeState("placeholder");
             [wind makeFirstResponder:self];
 #endif
     }
-
+    CPTextFieldSelectFunction();
 }
 
 - (void)copy:(id)sender
