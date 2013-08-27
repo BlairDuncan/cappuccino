@@ -203,4 +203,10 @@
     }
 }
 
+// force a regular mouse down and not show the browser context menu
+- (void)rightMouseDown:(CPEvent)anEvent
+{
+    [self mouseDown:anEvent];
+}
+
 @end
