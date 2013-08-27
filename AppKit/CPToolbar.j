@@ -1200,6 +1200,8 @@ var LABEL_MARGIN    = 2.0;
 
         if (alternateImage)
             [_imageView setImage:alternateImage];
+        else
+            [self setBackgroundColor:[CPColor lightGrayColor]];
 
         [_labelField setTextShadowOffset:CGSizeMakeZero()];
     }
@@ -1211,6 +1213,7 @@ var LABEL_MARGIN    = 2.0;
             [_imageView setImage:image];
 
         [_labelField setTextShadowOffset:CGSizeMake(0.0, 1.0)];
+        [self setBackgroundColor:[CPColor clearColor]];
     }
 
     [_labelField setTextShadowColor:[self FIXME_labelShadowColor]];
