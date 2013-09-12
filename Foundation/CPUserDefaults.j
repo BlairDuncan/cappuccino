@@ -302,6 +302,26 @@ var StandardUserDefaults;
     return [CPGlobalDomain, CPApplicationDomain];
 }
 
+- (CPDictionary)persistentDomainForName:(CPString)aDomain
+{
+    return [_domains objectForKey:aDomain];
+}
+
+- (void)removePersistentDomainForName:(CPString)aDomain
+{
+    if (![_domains objectForKey:aDomain])
+        return;
+
+    [self setPersistentDomain:[CPDictionary dictionary] forName:aDomain];
+}
+
+- (void)setPersistentDomain:(CPDictionary)aDictionary forName:(CPString)aDomain
+{
+    [_domains setObject:aDictionary forKey:aDomain];
+    _searchListNeedsReload = YES;
+    [self domainDidChange:aDomain];
+}
+
 /*!
     Returns the currently used instance of CPUserDefaultStore concrete subclass for the given domain name.
 */
